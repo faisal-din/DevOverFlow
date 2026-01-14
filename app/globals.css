@@ -335,6 +335,10 @@
   @apply dark:bg-dark-400! bg-light-800! text-light-500! dark:data-[state=active]:bg-dark-300! data-[state=active]:bg-primary-100! data-[state=active]:text-primary-500! min-h-full!;
 }
 
+@utility wrapper-root-layout {
+  @apply flex min-h-screen flex-1 flex-col px-6 pt-36 pb-6 max-md:pb-14 sm:px-14;
+}
+
 @layer base {
   :root {
     --radius: 0.5rem;

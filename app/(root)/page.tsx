@@ -1,27 +1,13 @@
-import { auth, signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
-import ROUTES from "@/constants/routes";
+import { auth } from "@/auth";
 
-const page = async () => {
+const Home = async () => {
   const session = await auth();
 
-  console.log(session);
   return (
-    <div>
-      <h1 className="h1-bold font-inter">Welcome to DevOverFlow</h1>
-
-      <form
-        className="mt-28 px-10"
-        action={async () => {
-          "use server";
-
-          await signOut({ redirectTo: ROUTES.SIGN_IN });
-        }}
-      >
-        <Button type="submit">Logout</Button>
-      </form>
-    </div>
+    <>
+      <h1 className="">Welcome to the world of Next.js</h1>
+    </>
   );
 };
 
-export default page;
+export default Home;
