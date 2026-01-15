@@ -35,5 +35,8 @@
     "**/.next": true,
     "**/next-env.d.ts": true,
     "**/.vscode": true
-  }
+  },
+  "editor.codeLensFontFamily": "Fira Code",
+  "editor.fontFamily": "Fira Code Retina",
+  "editor.fontLigatures": true
 }
