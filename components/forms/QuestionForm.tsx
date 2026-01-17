@@ -1,14 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AskQuestionSchema } from "@/lib/validations";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { MDXEditorMethods } from "@mdxeditor/editor";
+import dynamic from "next/dynamic";
+
+// This is the only place InitializedMDXEditor is imported directly.
+const Editor = dynamic(() => import("@/components/editor"), {
+  // Make sure we turn SSR off
+  ssr: false,
+});
 
 const QuestionForm = () => {
+  const editorRef = useRef<MDXEditorMethods>(null);
+
   const form = useForm({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
@@ -23,6 +33,7 @@ const QuestionForm = () => {
   return (
     <Form {...form}>
       <form className="flex w-full flex-col gap-10" onSubmit={form.handleSubmit(handleCreateQuestion)}>
+        {/* Title Field */}{" "}
         <FormField
           control={form.control}
           name="title"
@@ -44,6 +55,7 @@ const QuestionForm = () => {
             </FormItem>
           )}
         />
+        {/* Editor Field */}
         <FormField
           control={form.control}
           name="content"
@@ -52,7 +64,9 @@ const QuestionForm = () => {
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Detailed explanation of your problem <span className="text-primary-500">*</span>
               </FormLabel>
-              <FormControl>Editor</FormControl>
+              <FormControl>
+                <Editor editorRef={editorRef} value={field.value} fieldChange={field.onChange} />
+              </FormControl>
               <FormDescription className="body-regular text-light-500 mt-2.5">
                 Introduce the problem and expand on what you&apos;ve put in the title.
               </FormDescription>
@@ -60,6 +74,7 @@ const QuestionForm = () => {
             </FormItem>
           )}
         />
+        {/* Tags Field */}
         <FormField
           control={form.control}
           name="tags"
@@ -85,7 +100,7 @@ const QuestionForm = () => {
             </FormItem>
           )}
         />
-
+        {/* Submit Button */}
         <div className="mt-16 flex justify-end">
           <Button type="submit" className="primary-gradient !text-light-900 w-fit">
             Ask A Question
