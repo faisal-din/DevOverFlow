@@ -19,3 +19,5 @@ interface Question {
   answers: number;
   views: number;
 }
+
+declare module "*.css";
