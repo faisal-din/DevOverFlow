@@ -3,12 +3,14 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 
-import { ActionResponse, ErrorResponse } from "@/types/global";
+import { signIn } from "@/auth";
+import Account from "@/database/account.model";
+import User from "@/database/user.model";
+
 import action from "../handlers/action";
 import { SignUpSchema } from "../validations";
 import handleError from "../handlers/error";
-import User from "@/database/user.model";
-import Account from "@/database/account.model";
+import { ActionResponse, ErrorResponse } from "@/types/global";
 
 export async function signUpWithCredentials(params: AuthCredentials): Promise<ActionResponse> {
   const validationResult = await action({ params, schema: SignUpSchema });
