@@ -5,13 +5,13 @@ import mongoose from "mongoose";
 import action from "../handlers/action";
 import { AskQuestionSchema } from "../validations";
 
-import { ActionResponse, ErrorResponse } from "@/types/global";
+import type { ActionResponse, ErrorResponse, Question } from "@/types/global";
 import handleError from "../handlers/error";
-import Question from "@/database/question.model";
+import QuestionModel from "@/database/question.model";
 import Tag from "@/database/tag.model";
 import TagQuestion from "@/database/tag-question.model";
 
-export async function createQuestion(params: createQuestionParams): Promise<ActionResponse> {
+export async function createQuestion(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
     params,
     schema: AskQuestionSchema,
@@ -29,7 +29,7 @@ export async function createQuestion(params: createQuestionParams): Promise<Acti
   session.startTransaction();
 
   try {
-    const [question] = await Question.create([{ title, content, author: userId }], { session });
+    const [question] = await QuestionModel.create([{ title, content, author: userId }], { session });
 
     if (!question) {
       throw new Error("Failed to create question");
@@ -54,7 +54,7 @@ export async function createQuestion(params: createQuestionParams): Promise<Acti
 
     await TagQuestion.insertMany(tagQuestionDocuments, { session });
 
-    await Question.findByIdAndUpdate(question._id, { $push: { tags: { $each: tagIds } } }, { session });
+    await QuestionModel.findByIdAndUpdate(question._id, { $push: { tags: { $each: tagIds } } }, { session });
 
     await session.commitTransaction();
 
