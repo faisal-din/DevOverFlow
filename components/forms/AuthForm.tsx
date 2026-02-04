@@ -76,7 +76,7 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
           disabled={form.formState.isSubmitting}
           className="primary-gradient paragraph-medium rounded-2 font-inter !text-light-900 min-h-12 w-full px-4 py-3"
         >
-          {form.formState.isSubmitting ? (buttonText === "Sign In" ? "Signin In..." : "Signing Up...") : buttonText}
+          {form.formState.isSubmitting ? (buttonText === "Sign In" ? "Signing In..." : "Signing Up...") : buttonText}
         </Button>
 
         {formType === "SIGN_IN" ? (

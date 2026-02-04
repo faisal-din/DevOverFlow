@@ -47,11 +47,18 @@ type ErrorResponse = ActionResponse<undefined> & {
 type APIErrorResponse = NextResponse<ErrorResponse>;
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 
+// difference between params and searchParams
+// params are part of the URL path, --> /question/:id
+// while searchParams are query parameters in the URL. --> /question?tag=javascript
 interface RouteParams {
   params: Promise<Record<string, string>>;
   searchParams: Promise<Record<string, string>>;
 }
 
-// difference between params and searchParams
-// params are part of the URL path, --> /question/:id
-// while searchParams are query parameters in the URL. --> /question?tag=javascript
+interface PaginatedSearchParams {
+  page?: number;
+  pageSize?: number;
+  query?: string;
+  filter?: string;
+  sort?: string;
+}
