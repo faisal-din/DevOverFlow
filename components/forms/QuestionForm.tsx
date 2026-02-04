@@ -11,11 +11,12 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import z from "zod";
 import TagCard from "../cards/TagCard";
-import { createQuestionAction } from "@/lib/actions/question.action";
+import { createQuestionAction, editQuestionAction } from "@/lib/actions/question.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/constants/routes";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Question } from "@/types/global";
 
 // This is the only place InitializedMDXEditor is imported directly.
 const Editor = dynamic(() => import("@/components/editor"), {
@@ -23,7 +24,12 @@ const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
 });
 
-const QuestionForm = () => {
+interface Params {
+  question?: Question;
+  isEdit?: boolean;
+}
+
+const QuestionForm = ({ question, isEdit = false }: Params) => {
   const router = useRouter();
   const editorRef = useRef<MDXEditorMethods>(null);
 
@@ -32,9 +38,9 @@ const QuestionForm = () => {
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
+      title: question?.title || "",
+      content: question?.content || "",
+      tags: question?.tags.map((tag) => tag.name) || [],
     },
   });
 
@@ -76,6 +82,24 @@ const QuestionForm = () => {
 
   const handleCreateQuestion = async (data: z.infer<typeof AskQuestionSchema>) => {
     startTransition(async () => {
+      if (isEdit && question) {
+        const result = await editQuestionAction({
+          questionId: question?._id,
+          ...data,
+        });
+
+        if (result.success) {
+          toast.success("Question updated successfully!");
+
+          router.push(ROUTES.QUESTION(question._id));
+        } else {
+          toast.error(`Error ${result.status} `, {
+            description: result.error?.message || "Something went wrong while creating the question.",
+          });
+        }
+        return; // exit the function if it's edited question and won't proceed to create question
+      }
+
       const result = await createQuestionAction(data);
 
       if (result.success) {
@@ -186,7 +210,7 @@ const QuestionForm = () => {
                 Submitting...
               </>
             ) : (
-              "Ask A Question"
+              <>{isEdit ? "Edit Question" : "Ask a Question"}</>
             )}
           </Button>
         </div>
