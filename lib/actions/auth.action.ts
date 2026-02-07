@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 
 import { signIn } from "@/auth";
-import Account from "@/database/account.model";
-import User from "@/database/user.model";
+import AccountModel from "@/database/account.model";
+import UserModel from "@/database/user.model";
 
 import action from "../handlers/action";
 import { SignInSchema, SignUpSchema } from "../validations";
@@ -26,13 +26,13 @@ export async function signUpWithCredentials(params: AuthCredentials): Promise<Ac
   session.startTransaction();
 
   try {
-    const existingUser = await User.findOne({ email }).session(session);
+    const existingUser = await UserModel.findOne({ email }).session(session);
 
     if (existingUser) {
       throw new Error("User already exists");
     }
 
-    const existingUsername = await User.findOne({ username }).session(session);
+    const existingUsername = await UserModel.findOne({ username }).session(session);
 
     if (existingUsername) {
       throw new Error("Username already exists");
@@ -40,11 +40,11 @@ export async function signUpWithCredentials(params: AuthCredentials): Promise<Ac
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const [newUser] = await User.create([{ username, name, email }], {
+    const [newUser] = await UserModel.create([{ username, name, email }], {
       session,
     });
 
-    await Account.create(
+    await AccountModel.create(
       [
         {
           userId: newUser._id,
@@ -83,11 +83,11 @@ export const signInWithCredentials = async (
   const { email, password } = validationResult.params!;
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await UserModel.findOne({ email });
 
     if (!existingUser) throw new NotFoundError("User");
 
-    const existingAccount = await Account.findOne({
+    const existingAccount = await AccountModel.findOne({
       provider: "credentials",
       providerAccountId: email,
     });
