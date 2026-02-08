@@ -3,9 +3,11 @@ import Preview from "@/components/editor/Preview";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
+import { getQuestionAction } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams, Tag } from "@/types/global";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 const sampleQuestion = {
   id: "q123",
@@ -91,8 +93,11 @@ Looking forward to your suggestions and examples!
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
 
-  const { author, createdAt, answers, views, tags, content } = sampleQuestion;
+  const { success, data: question } = await getQuestionAction({ questionId: id });
 
+  if (!success || !question) return redirect("/404");
+
+  const { author, createdAt, answers, views, tags, content } = question;
   return (
     <>
       <div className="flex-start w-full flex-col">
@@ -110,7 +115,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           </div>
         </div>
 
-        <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">{sampleQuestion.title}</h2>
+        <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">{question.title}</h2>
       </div>
 
       <div className="mt-5 mb-8 flex flex-wrap gap-4">

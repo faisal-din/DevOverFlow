@@ -11,6 +11,7 @@ import handleError from "../handlers/error";
 import QuestionModel, { IQuestionDoc } from "@/database/question.model";
 import TagModel, { ITagDoc } from "@/database/tag.model";
 import TagQuestionModel from "@/database/tag-question.model";
+import { createQuestionParams, EditQuestionParams, GetQuestionParams } from "@/types/action";
 
 export async function createQuestionAction(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
@@ -173,7 +174,7 @@ export async function getQuestionAction(params: GetQuestionParams): Promise<Acti
   const { questionId } = validationResult.params!;
 
   try {
-    const question = await QuestionModel.findById(questionId).populate("tags");
+    const question = await QuestionModel.findById(questionId).populate("tags").populate("author", "_id name image");
 
     if (!question) {
       throw new Error("Question not found");
