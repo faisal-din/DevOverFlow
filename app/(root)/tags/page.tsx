@@ -3,7 +3,7 @@ import DataRenderer from "@/components/DataRenderer";
 import LocalSearch from "@/components/search/LocalSearch";
 import ROUTES from "@/constants/routes";
 import { EMPTY_TAGS } from "@/constants/states";
-import { getTagsAction } from "@/lib/actions/tag.actions";
+import { getTagsAction } from "@/lib/actions/tag.action";
 
 const Tags = async ({ searchParams }) => {
   const { page, pageSize, query, filter } = await searchParams;
@@ -16,8 +16,6 @@ const Tags = async ({ searchParams }) => {
   });
 
   const { tags } = data || {};
-
-  console.log("TAGS: ", JSON.stringify(tags, null, 2));
 
   return (
     <>

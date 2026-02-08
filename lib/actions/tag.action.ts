@@ -6,7 +6,7 @@ import { ActionResponse, ErrorResponse, PaginatedSearchParams, Question, Tag } f
 import { GetTagQuestionsSchema, PaginatedSearchParamsSchema } from "../validations";
 
 import { FilterQuery } from "mongoose";
-import { QuestionModel, QuestionModel, TagModel } from "@/database";
+import { QuestionModel, TagModel } from "@/database";
 
 export const getTagsAction = async (
   params: PaginatedSearchParams
@@ -67,7 +67,7 @@ export const getTagsAction = async (
   }
 };
 
-export const getTagQuestions = async (
+export const getTagQuestionsAction = async (
   params: GetTagQuestionsParams
 ): Promise<ActionResponse<{ tag: Tag; questions: Question[]; isNext: boolean }>> => {
   const validationResult = await action({
