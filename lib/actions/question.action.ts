@@ -3,7 +3,13 @@
 import mongoose, { FilterQuery } from "mongoose";
 
 import action from "../handlers/action";
-import { AskQuestionSchema, EditQuestionSchema, GetQuestionSchema, PaginatedSearchParamsSchema } from "../validations";
+import {
+  AskQuestionSchema,
+  EditQuestionSchema,
+  GetQuestionSchema,
+  IncrementViewsSchema,
+  PaginatedSearchParamsSchema,
+} from "../validations";
 
 import type { ActionResponse, ErrorResponse, PaginatedSearchParams, Question } from "@/types/global";
 import handleError from "../handlers/error";
@@ -11,7 +17,7 @@ import handleError from "../handlers/error";
 import QuestionModel, { IQuestionDoc } from "@/database/question.model";
 import TagModel, { ITagDoc } from "@/database/tag.model";
 import TagQuestionModel from "@/database/tag-question.model";
-import { createQuestionParams, EditQuestionParams, GetQuestionParams } from "@/types/action";
+import { createQuestionParams, EditQuestionParams, GetQuestionParams, IncrementViewsParams } from "@/types/action";
 
 export async function createQuestionAction(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
@@ -245,6 +251,38 @@ export async function getAllQuestionsAction(
     return {
       success: true,
       data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function incrementViewsAction(params: IncrementViewsParams): Promise<ActionResponse<{ views: number }>> {
+  const validationResult = await action({
+    params,
+    schema: IncrementViewsSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { questionId } = validationResult.params!;
+
+  try {
+    const question = await QuestionModel.findById(questionId);
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    question.views += 1;
+
+    await question.save();
+
+    return {
+      success: true,
+      data: { views: question.views },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

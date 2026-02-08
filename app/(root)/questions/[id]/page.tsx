@@ -3,11 +3,12 @@ import Preview from "@/components/editor/Preview";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { getQuestionAction } from "@/lib/actions/question.action";
+import { getQuestionAction, incrementViewsAction } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams, Tag } from "@/types/global";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 
 const sampleQuestion = {
   id: "q123",
@@ -94,6 +95,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
 
   const { success, data: question } = await getQuestionAction({ questionId: id });
+
+  after(async () => {
+    await incrementViewsAction({ questionId: id });
+  });
 
   if (!success || !question) return redirect("/404");
 
