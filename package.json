@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.26",
     "@hookform/resolvers": "^5.2.2",
     "@mdxeditor/editor": "^3.52.3",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -16,6 +17,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "ai": "^6.0.77",
     "bcryptjs": "^3.0.3",
     "bright": "^1.0.0",
     "class-variance-authority": "^0.7.1",
