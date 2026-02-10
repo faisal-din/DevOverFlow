@@ -1,13 +1,14 @@
 "use client";
 
 import {
+  CodeToggle,
   headingsPlugin,
   listsPlugin,
   quotePlugin,
   thematicBreakPlugin,
   markdownShortcutPlugin,
   MDXEditor,
-  type MDXEditorMethods,
+  MDXEditorMethods,
   toolbarPlugin,
   ConditionalContents,
   ChangeCodeMirrorLanguage,
@@ -28,7 +29,7 @@ import {
   codeMirrorPlugin,
   diffSourcePlugin,
 } from "@mdxeditor/editor";
-import type { ForwardedRef } from "react";
+import { Ref } from "react";
 import { basicDark } from "cm6-theme-basic-dark";
 import { useTheme } from "next-themes";
 
@@ -38,13 +39,13 @@ import "./dark-editor.css";
 interface Props {
   value: string;
   fieldChange: (value: string) => void;
-  editorRef: ForwardedRef<MDXEditorMethods> | null;
+  editorRef: Ref<MDXEditorMethods> | null;
 }
 
-const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
+const Editor = ({ value, editorRef, fieldChange }: Props) => {
   const { resolvedTheme } = useTheme();
 
-  const theme = resolvedTheme === "dark" ? [basicDark] : [];
+  const themeExtension = resolvedTheme === "dark" ? [basicDark] : [];
 
   return (
     <MDXEditor
@@ -54,8 +55,6 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
       className="background-light800_dark200 light-border-2 markdown-editor dark-editor w-full border"
       onChange={fieldChange}
       plugins={[
-        // Add desired plugins here
-
         headingsPlugin(),
         listsPlugin(),
         linkPlugin(),
@@ -83,7 +82,7 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
             jsx: "JavaScript (React)",
           },
           autoLoadLanguageSupport: true,
-          codeMirrorExtensions: theme,
+          codeMirrorExtensions: themeExtension,
         }),
         diffSourcePlugin({ viewMode: "rich-text", diffMarkdown: "" }),
         toolbarPlugin({
@@ -101,6 +100,7 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
                       <Separator />
 
                       <BoldItalicUnderlineToggles />
+                      <CodeToggle />
                       <Separator />
 
                       <ListsToggle />
@@ -112,6 +112,7 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
 
                       <InsertTable />
                       <InsertThematicBreak />
+                      <Separator />
 
                       <InsertCodeBlock />
                     </>
@@ -122,7 +123,6 @@ const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
           ),
         }),
       ]}
-      {...props}
     />
   );
 };
