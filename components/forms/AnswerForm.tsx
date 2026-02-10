@@ -74,10 +74,10 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
 
     setIsAISubmitting(true);
 
-    try {
-      const { success, data, error } = await api.ai.getAnswer(questionTitle, questionContent);
+    const userAnswer = editorRef.current?.getMarkdown();
 
-      console.log("success from api.ai.getAnswer:", success);
+    try {
+      const { success, data, error } = await api.ai.getAnswer(questionTitle, questionContent, userAnswer);
 
       if (!success) {
         return toast.error("Error", {
