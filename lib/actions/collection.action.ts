@@ -5,8 +5,8 @@ import { ActionResponse, ErrorResponse } from "@/types/global";
 import { CollectionBaseSchema } from "../validations";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { CollectionModel, CollectionModel, QuestionModel } from "@/database";
-import { revalidatePath, revalidatePath } from "next/cache";
+import { CollectionModel, QuestionModel } from "@/database";
+import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 
 export async function toggleSaveQuestionAction(
