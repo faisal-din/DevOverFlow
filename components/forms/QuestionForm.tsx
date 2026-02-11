@@ -95,6 +95,9 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
         } else {
           toast.error(`Error ${result.status} `, {
             description: result.error?.message || "Something went wrong while creating the question.",
+            style: {
+              background: "red",
+            },
           });
         }
         return; // exit the function if it's edited question and won't proceed to create question
@@ -111,6 +114,9 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
       } else {
         toast.error(`Error ${result.status} `, {
           description: result.error?.message || "Something went wrong while creating the question.",
+          style: {
+            background: "red",
+          },
         });
       }
     });

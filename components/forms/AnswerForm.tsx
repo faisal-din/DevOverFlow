@@ -60,7 +60,11 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
           editorRef.current.setMarkdown("");
         }
       } else {
-        toast.error(result.error?.message || "Failed to post answer. Please try again.");
+        toast.error(result.error?.message || "Failed to post answer. Please try again.", {
+          style: {
+            background: "red",
+          },
+        });
       }
     });
   };
@@ -69,6 +73,9 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
     if (session.status !== "authenticated") {
       return toast.error("Please log in", {
         description: " You need to be Logged in to generate an AI answer.",
+        style: {
+          background: "red",
+        },
       });
     }
 
@@ -82,6 +89,9 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
       if (!success) {
         return toast.error("Error", {
           description: error?.message,
+          style: {
+            background: "red",
+          },
         });
       }
 
@@ -100,6 +110,9 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
     } catch (error) {
       toast.error("Error", {
         description: error instanceof Error ? error.message : "There was a problem with your request",
+        style: {
+          background: "red",
+        },
       });
     } finally {
       setIsAISubmitting(false);

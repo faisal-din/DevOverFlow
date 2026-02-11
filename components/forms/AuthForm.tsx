@@ -39,6 +39,9 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
     } else {
       toast.error("Authentication Failed", {
         description: result?.error?.message,
+        style: {
+          background: "red",
+        },
       });
     }
   };
