@@ -55,7 +55,7 @@ export async function CreateVoteAction(params: CreateVoteParams): Promise<Action
   const { targetId, targetType, voteType } = validationResult.params!;
   const userId = validationResult.session?.user?.id;
 
-  if (!userId) handleError(new Error("Unauthorized")) as ErrorResponse;
+  if (!userId) return handleError(new Error("Unauthorized")) as ErrorResponse;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -75,7 +75,26 @@ export async function CreateVoteAction(params: CreateVoteParams): Promise<Action
       } else {
         // If the user has already voted with a different voteType, update the vote
         await VoteModel.findByIdAndUpdate(existingVote._id, { voteType }, { new: true, session });
-        await updateVoteCountAction({ targetId, targetType, voteType, change: 1 }, session);
+
+        await updateVoteCountAction(
+          {
+            targetId,
+            targetType,
+            voteType: existingVote.voteType,
+            change: -1,
+          },
+          session
+        );
+
+        await updateVoteCountAction(
+          {
+            targetId,
+            targetType,
+            voteType,
+            change: 1,
+          },
+          session
+        );
       }
     } else {
       // If the user has not voted yet, create a new vote
