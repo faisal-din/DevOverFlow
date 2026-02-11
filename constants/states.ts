@@ -53,3 +53,8 @@ export const EMPTY_COLLECTIONS = {
     href: ROUTES.COLLECTION,
   },
 };
+
+export const EMPTY_USERS = {
+  title: "No Users Found",
+  message: "You`re ALONE. The only user here is you. Time to invite some friends and build a community!",
+};
