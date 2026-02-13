@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 interface Tag {
   _id: string;
   name: string;
+  questions?: number;
 }
 
 interface Author {
@@ -22,7 +23,7 @@ interface Question {
   answers: number;
   views: number;
   createdAt: Date;
-  createdAt: Date;
+  updatedAt: Date;
 }
 
 declare module "*.css";
