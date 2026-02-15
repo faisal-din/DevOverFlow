@@ -11,6 +11,8 @@ import { ActionResponse, ErrorResponse } from "@/types/global";
 import { CreateVoteSchema, HasVotedSchema, UpdateVoteCountSchema } from "../validations";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
+import { after } from "next/server";
+import { createInteraction } from "./interaction.action";
 
 export async function updateVoteCountAction(
   params: UpdateVoteCountParams,
@@ -61,6 +63,14 @@ export async function CreateVoteAction(params: CreateVoteParams): Promise<Action
   session.startTransaction();
 
   try {
+    const Model = targetType === "question" ? QuestionModel : AnswerModel;
+
+    const contentDoc = await Model.findById(targetId).session(session);
+    if (!contentDoc) throw new Error("Content not found");
+
+    const contentAuthorId = contentDoc.author.toString();
+
+    // Check if the user has already voted on this target
     const existingVote = await VoteModel.findOne({
       author: userId,
       actionId: targetId,
@@ -113,6 +123,16 @@ export async function CreateVoteAction(params: CreateVoteParams): Promise<Action
       );
       await updateVoteCountAction({ targetId, targetType, voteType, change: 1 }, session);
     }
+
+    // log the interaction
+    after(async () => {
+      await createInteraction({
+        action: voteType,
+        actionId: targetId,
+        actionTarget: targetType,
+        authorId: contentAuthorId,
+      });
+    });
 
     await session.commitTransaction();
     session.endSession();

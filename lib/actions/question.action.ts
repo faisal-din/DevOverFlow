@@ -28,6 +28,8 @@ import {
 } from "@/types/action";
 import dbConnect from "../mongoose";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { createInteraction } from "./interaction.action";
 
 export async function createQuestionAction(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
@@ -73,6 +75,16 @@ export async function createQuestionAction(params: createQuestionParams): Promis
     await TagQuestionModel.insertMany(tagQuestionDocuments, { session });
 
     await QuestionModel.findByIdAndUpdate(question._id, { $push: { tags: { $each: tagIds } } }, { session });
+
+    // log the interaction
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: question._id.toString(),
+        actionTarget: "question",
+        authorId: userId as string,
+      });
+    });
 
     await session.commitTransaction();
 
