@@ -2,12 +2,12 @@
 
 import mongoose from "mongoose";
 import AnswerModel, { IAnswerDoc } from "@/database/answer.model";
-import { CreateAnswerParams, GetAnswersParams } from "@/types/action";
+import { CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from "@/types/action";
 import { ActionResponse, Answer, ErrorResponse } from "@/types/global";
 import action from "../handlers/action";
-import { AnswerServerSchema, GetAnswersSchema } from "../validations";
+import { AnswerServerSchema, DeleteAnswerSchema, GetAnswersSchema } from "../validations";
 import handleError from "../handlers/error";
-import { QuestionModel } from "@/database";
+import { QuestionModel, VoteModel } from "@/database";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 
@@ -133,3 +133,40 @@ export const getAllAnswersAction = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
+export async function deleteAnswerAction(params: DeleteAnswerParams): Promise<ActionResponse> {
+  const validationResult = await action({
+    params,
+    schema: DeleteAnswerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { answerId } = validationResult.params!;
+  const { user } = validationResult.session!;
+
+  try {
+    const answer = await AnswerModel.findById(answerId);
+    if (!answer) throw new Error("Answer not found");
+
+    if (answer.author.toString() !== user?.id) throw new Error("You're not allowed to delete this answer");
+
+    // reduce the question answers count
+    await QuestionModel.findByIdAndUpdate(answer.question, { $inc: { answers: -1 } }, { new: true });
+
+    // delete votes associated with answer
+    await VoteModel.deleteMany({ actionId: answerId, actionType: "answer" });
+
+    // delete the answer
+    await AnswerModel.findByIdAndDelete(answerId);
+
+    revalidatePath(`/profile/${user?.id}`);
+
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
