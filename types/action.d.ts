@@ -93,3 +93,10 @@ interface DeleteQuestionParams {
 interface DeleteAnswerParams {
   answerId: string;
 }
+
+interface CreateInteractionParams {
+  action: "view" | "upvote" | "downvote" | "bookmark" | "post" | "edit" | "delete" | "search";
+  actionTarget: "question" | "answer";
+  actionId: string;
+  authorId: string;
+}
