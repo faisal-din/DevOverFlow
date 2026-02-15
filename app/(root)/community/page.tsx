@@ -6,14 +6,14 @@ import LocalSearch from "@/components/search/LocalSearch";
 import { UserFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_USERS } from "@/constants/states";
-import { getUserAction } from "@/lib/actions/user.action";
+import { getUsersAction } from "@/lib/actions/user.action";
 import { RouteParams } from "@/types/global";
 import React from "react";
 
 const Community = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;
 
-  const { success, data, error } = await getUserAction({
+  const { success, data, error } = await getUsersAction({
     page: Number(page) || 1,
     pageSize: Number(pageSize) || 10,
     query,

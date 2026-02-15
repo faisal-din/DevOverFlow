@@ -67,9 +67,6 @@ async function updateReputation(params: UpdateReputationParams) {
   const { interaction, session, performerId, authorId } = params;
   const { action, actionType } = interaction;
 
-  const { interaction, session, performerId, authorId } = params;
-  const { action, actionType } = interaction;
-
   let performerPoints = 0;
   let authorPoints = 0;
 
