@@ -4,9 +4,10 @@ import InteractionModel, { IInteractionDoc } from "@/database/interaction.model"
 
 import { ActionResponse, ErrorResponse } from "@/types/global";
 import { CreateInteractionSchema } from "../validations";
-import { CreateInteractionParams } from "@/types/action";
+import { CreateInteractionParams, UpdateReputationParams } from "@/types/action";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
+import { UserModel } from "@/database";
 
 export async function createInteraction(params: CreateInteractionParams): Promise<ActionResponse<IInteractionDoc>> {
   const validationResult = await action({
@@ -23,7 +24,7 @@ export async function createInteraction(params: CreateInteractionParams): Promis
     action: actionType,
     actionId,
     actionTarget,
-    authorId, // target user who owns the content (question/answer)
+    authorId, // person who owns the content (question/answer)
   } = validationResult.params!;
   const userId = validationResult.session?.user?.id;
 
@@ -43,7 +44,13 @@ export async function createInteraction(params: CreateInteractionParams): Promis
       { session }
     );
 
-    // Todo: Update reputation for both the performer and the content author
+    // Update reputation for both the performer and the content author
+    await updateReputation({
+      interaction,
+      session,
+      performerId: userId!,
+      authorId,
+    });
 
     await session.commitTransaction();
 
@@ -54,4 +61,56 @@ export async function createInteraction(params: CreateInteractionParams): Promis
   } finally {
     await session.endSession();
   }
+}
+
+async function updateReputation(params: UpdateReputationParams) {
+  const { interaction, session, performerId, authorId } = params;
+  const { action, actionType } = interaction;
+
+  const { interaction, session, performerId, authorId } = params;
+  const { action, actionType } = interaction;
+
+  let performerPoints = 0;
+  let authorPoints = 0;
+
+  switch (action) {
+    case "upvote":
+      performerPoints = 2;
+      authorPoints = 10;
+      break;
+    case "downvote":
+      performerPoints = -1;
+      authorPoints = -2;
+      break;
+    case "post":
+      authorPoints = actionType === "question" ? 5 : 10;
+      break;
+    case "delete":
+      authorPoints = actionType === "question" ? -5 : -10;
+      break;
+  }
+
+  if (performerId === authorId) {
+    await UserModel.findByIdAndUpdate(performerId, { $inc: { reputation: authorPoints } }, { session });
+
+    return;
+  }
+
+  await UserModel.bulkWrite(
+    [
+      {
+        updateOne: {
+          filter: { _id: performerId },
+          update: { $inc: { reputation: performerPoints } },
+        },
+      },
+      {
+        updateOne: {
+          filter: { _id: authorId },
+          update: { $inc: { reputation: authorPoints } },
+        },
+      },
+    ],
+    { session }
+  );
 }

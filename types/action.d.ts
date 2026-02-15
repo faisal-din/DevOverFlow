@@ -100,3 +100,10 @@ interface CreateInteractionParams {
   actionId: string;
   authorId: string;
 }
+
+interface UpdateReputationParams {
+  interaction: IInteractionDoc;
+  session: mongoose.ClientSession;
+  performerId: string;
+  authorId: string;
+}
