@@ -1,6 +1,6 @@
 "use server";
 
-import mongoose, { FilterQuery } from "mongoose";
+import mongoose, { FilterQuery, Types } from "mongoose";
 
 import action from "../handlers/action";
 import {
@@ -18,18 +18,20 @@ import handleError from "../handlers/error";
 import QuestionModel, { IQuestionDoc } from "@/database/question.model";
 import TagModel, { ITagDoc } from "@/database/tag.model";
 import TagQuestionModel from "@/database/tag-question.model";
-import { AnswerModel, CollectionModel, VoteModel } from "@/database";
+import { AnswerModel, CollectionModel, InteractionModel, VoteModel } from "@/database";
 import {
   createQuestionParams,
   DeleteQuestionParams,
   EditQuestionParams,
   GetQuestionParams,
   IncrementViewsParams,
+  RecommendationParams,
 } from "@/types/action";
 import dbConnect from "../mongoose";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { createInteraction } from "./interaction.action";
+import { auth } from "@/auth";
 
 export async function createQuestionAction(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
@@ -214,9 +216,71 @@ export async function getQuestionAction(params: GetQuestionParams): Promise<Acti
   }
 }
 
-export async function getAllQuestionsAction(
-  params: PaginatedSearchParams
-): Promise<ActionResponse<{ questions: Question[]; isNext: boolean }>> {
+export async function getRecommendedQuestionsAction({ userId, query, skip, limit }: RecommendationParams) {
+  // Get user's recent interactions
+  const interactions = await InteractionModel.find({
+    user: new Types.ObjectId(userId),
+    actionType: "question",
+    action: { $in: ["view", "upvote", "bookmark", "post"] },
+  })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .lean();
+
+  const interactedQuestionIds = interactions.map((interaction) => interaction.actionId);
+
+  // Get tags from interacted questions
+  const interactedQuestions = await QuestionModel.find({
+    _id: { $in: interactedQuestionIds },
+  }).select("tags");
+
+  // Get unique tags
+  const allTags = interactedQuestions.flatMap((q) => q.tags.map((tag: Types.ObjectId) => tag.toString()));
+
+  // const arr = [[js, node], [js, react], [node, express]]
+  // arr.flatMap((x) => x)
+  // Output: [js, node, js, react, node, express]
+
+  // Remove duplicates
+  const uniqueTagIds = [...new Set(allTags)];
+
+  const recommendedQuery: FilterQuery<typeof QuestionModel> = {
+    // exclude interacted questions
+    _id: { $nin: interactedQuestionIds },
+    // exclude the user's own questions
+    author: { $ne: new Types.ObjectId(userId) },
+    // include questions with any of the unique tags
+    tags: { $in: uniqueTagIds.map((id) => new Types.ObjectId(id)) },
+  };
+
+  if (query) {
+    recommendedQuery.$or = [{ title: { $regex: query, $options: "i" } }, { content: { $regex: query, $options: "i" } }];
+  }
+
+  const totalQuestions = await QuestionModel.countDocuments(recommendedQuery);
+
+  const questions = await QuestionModel.find(recommendedQuery)
+    .populate("tags", "name")
+    .populate("author", "name image")
+    .sort({ upvotes: -1, views: -1 }) // prioritizing engagement
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const isNext = totalQuestions > skip + questions.length;
+
+  return {
+    questions: JSON.parse(JSON.stringify(questions)),
+    isNext,
+  };
+}
+
+export async function getAllQuestionsAction(params: PaginatedSearchParams): Promise<
+  ActionResponse<{
+    questions: Question[];
+    isNext: boolean;
+  }>
+> {
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -231,33 +295,50 @@ export async function getAllQuestionsAction(
   const limit = Number(pageSize);
 
   const filterQuery: FilterQuery<typeof QuestionModel> = {};
-
-  if (filter === "recommended") {
-    return { success: true, data: { questions: [], isNext: false } };
-  }
-
-  if (query) {
-    filterQuery.$or = [{ title: { $regex: new RegExp(query, "i") } }, { content: { $regex: new RegExp(query, "i") } }];
-  }
-
   let sortCriteria = {};
 
-  switch (filter) {
-    case "newest":
-      sortCriteria = { createdAt: -1 };
-      break;
-    case "unanswered":
-      filterQuery.answers = 0;
-      sortCriteria = { createdAt: -1 };
-      break;
-    case "popular":
-      sortCriteria = { upvotes: -1 };
-      break;
-    default:
-      sortCriteria = { createdAt: -1 };
-      break;
-  }
   try {
+    // Recommendations
+    if (filter === "recommended") {
+      const session = await auth();
+      const userId = session?.user?.id;
+
+      if (!userId) {
+        return { success: true, data: { questions: [], isNext: false } };
+      }
+
+      const recommended = await getRecommendedQuestionsAction({
+        userId,
+        query,
+        skip,
+        limit,
+      });
+
+      return { success: true, data: recommended };
+    }
+
+    // Search
+    if (query) {
+      filterQuery.$or = [{ title: { $regex: query, $options: "i" } }, { content: { $regex: query, $options: "i" } }];
+    }
+
+    // Filters
+    switch (filter) {
+      case "newest":
+        sortCriteria = { createdAt: -1 };
+        break;
+      case "unanswered":
+        filterQuery.answers = 0;
+        sortCriteria = { createdAt: -1 };
+        break;
+      case "popular":
+        sortCriteria = { upvotes: -1 };
+        break;
+      default:
+        sortCriteria = { createdAt: -1 };
+        break;
+    }
+
     const totalQuestions = await QuestionModel.countDocuments(filterQuery);
 
     const questions = await QuestionModel.find(filterQuery)
