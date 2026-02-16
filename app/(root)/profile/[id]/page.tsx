@@ -98,7 +98,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
             <div className="mt-5 flex flex-wrap items-center justify-start gap-5">
               {portfolio && <ProfileLink imgUrl="/icons/link.svg" href={portfolio} title="Portfolio" />}
 
-              {location && <ProfileLink imgUrl="/icons/location.svg" title="Portfolio" />}
+              {location && <ProfileLink imgUrl="/icons/location.svg" title={location} />}
 
               <ProfileLink imgUrl="/icons/calendar.svg" title={dayjs(createdAt).format("MMMM YYYY")} />
               {/*  */}
@@ -111,7 +111,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
         <div className="flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3">
           {loggedInUser?.user?.id === id && (
             <Link href="/profile/edit">
-              <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-12 min-w-44 px-4 py-3">
+              <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-12 min-w-44 cursor-pointer px-4 py-3">
                 Edit Profile
               </Button>
             </Link>

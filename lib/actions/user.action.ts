@@ -4,9 +4,15 @@ import { FilterQuery, PipelineStage, Types } from "mongoose";
 import { ActionResponse, Answer, Badges, ErrorResponse, PaginatedSearchParams, User } from "@/types/global";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { GetUserSchema, PaginatedSearchParamsSchema } from "../validations";
+import { GetUserSchema, PaginatedSearchParamsSchema, UpdateUserSchema } from "../validations";
 import { AnswerModel, QuestionModel, UserModel } from "@/database";
-import { GetUserAnswersParams, GetUserParams, GetUserQuestionsParams, GetUserTagsParams } from "@/types/action";
+import {
+  GetUserAnswersParams,
+  GetUserParams,
+  GetUserQuestionsParams,
+  GetUserTagsParams,
+  UpdateUserParams,
+} from "@/types/action";
 import { assignBadges } from "../utils";
 
 export async function getUsersAction(params: PaginatedSearchParams): Promise<
@@ -303,6 +309,33 @@ export async function getUserTopTagsAction(params: GetUserTagsParams): Promise<
       data: {
         tags: JSON.parse(JSON.stringify(tags)),
       },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateUserAction(params: UpdateUserParams): Promise<ActionResponse<{ user: User }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateUserSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { user } = validationResult.session!;
+
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(user?.id, params, {
+      new: true,
+    });
+
+    return {
+      success: true,
+      data: { user: JSON.parse(JSON.stringify(updatedUser)) },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
