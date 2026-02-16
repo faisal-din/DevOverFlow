@@ -32,6 +32,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { createInteraction } from "./interaction.action";
 import { auth } from "@/auth";
+import { cache } from "react";
 
 export async function createQuestionAction(params: createQuestionParams): Promise<ActionResponse<Question>> {
   const validationResult = await action({
@@ -190,7 +191,9 @@ export async function editQuestionAction(params: EditQuestionParams): Promise<Ac
   }
 }
 
-export async function getQuestionAction(params: GetQuestionParams): Promise<ActionResponse<Question>> {
+export const getQuestionAction = cache(async function getQuestionAction(
+  params: GetQuestionParams
+): Promise<ActionResponse<Question>> {
   const validationResult = await action({
     params,
     schema: GetQuestionSchema,
@@ -214,7 +217,7 @@ export async function getQuestionAction(params: GetQuestionParams): Promise<Acti
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-}
+});
 
 export async function getRecommendedQuestionsAction({ userId, query, skip, limit }: RecommendationParams) {
   // Get user's recent interactions
