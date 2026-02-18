@@ -1,7 +1,7 @@
 <div align="center">
   <br />
     <a href="">
-      <img src="https://github.com/user-attachments/assets/769882e6-bae6-4932-a117-829cf34f809f" alt="Project Banner">
+      <img src="/public/images/banner.png" alt="Project Banner">
     </a>
   <br />
 
@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/-Tailwind_CSS-black?style=for-the-badge&logoColor=white&logo=tailwindcss&color=06B6D4" alt="tailwindcss" />
     <img src="https://img.shields.io/badge/-MongoDB-black?style=for-the-badge&logoColor=white&logo=mongodb&color=47A248" alt="mongodb" />
     <img src="https://img.shields.io/badge/-ShadCN_UI-black?style=for-the-badge&logoColor=white&logo=shadcnui&color=000000" alt="shadcnui" />
-    <img src="https://img.shields.io/badge/-Gemini_AI-black?style=for-the-badge&logoColor=white&logo=gemini&color=412991" alt="gemini" />
+     <img src="https://img.shields.io/badge/-Gemini-black?style=for-the-badge&logoColor=white&logo=google&color=8E75B2" alt="gemini" />
   </div>
 
 </div>
@@ -107,7 +107,7 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/faisal-din/devoverflow.git
+git clone https://github.com/faisal-din/DevOverFlow.git
 cd devoverflow
 ```
 
