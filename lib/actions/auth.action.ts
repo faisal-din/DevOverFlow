@@ -12,6 +12,7 @@ import { SignInSchema, SignUpSchema } from "../validations";
 import handleError from "../handlers/error";
 import { ActionResponse, ErrorResponse } from "@/types/global";
 import { NotFoundError } from "../http-errors";
+import { AuthCredentials } from "@/types/action";
 
 export async function signUpWithCredentials(params: AuthCredentials): Promise<ActionResponse> {
   const validationResult = await action({ params, schema: SignUpSchema });

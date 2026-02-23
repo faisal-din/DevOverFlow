@@ -20,6 +20,8 @@ import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
 import TagCard from "@/components/cards/TagCard";
+import { EMPTY_ANSWERS, EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
+import { title } from "process";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   // params --> /12312313
@@ -78,6 +80,21 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   const { tags } = userTopTags!;
 
   const { _id, name, image, portfolio, location, createdAt, username, bio } = user;
+
+  const emptyQuestionState =
+    loggedInUser?.user?.id === id
+      ? EMPTY_QUESTION
+      : { title: "No Questions Found", message: "This user hasn`t posted any questions yet." };
+
+  const emptyAnswerState =
+    loggedInUser?.user?.id === id
+      ? EMPTY_ANSWERS
+      : { title: "No Answers Found", message: "This user hasn`t answered any questions yet." };
+
+  const emptyTagState =
+    loggedInUser?.user?.id === id
+      ? EMPTY_TAGS
+      : { title: "No Tags Found", message: "This user hasn`t used any tags yet." };
 
   return (
     <>
@@ -146,10 +163,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <TabsContent value="top-posts" className="mt-5 flex w-full flex-col gap-6">
             <DataRenderer
               data={questions}
-              empty={{
-                title: "No Questions Found",
-                message: "This user hasn`t posted any questions yet.",
-              }}
+              empty={emptyQuestionState}
               success={userQuestionsSuccess}
               error={userQuestionsError}
               render={(questions) => (
@@ -171,10 +185,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <TabsContent value="answers" className="mt-5 flex w-full flex-col gap-10">
             <DataRenderer
               data={answers}
-              empty={{
-                title: "No Answers Found",
-                message: "This user hasn`t answered any questions yet.",
-              }}
+              empty={emptyAnswerState}
               success={userAnswersSuccess}
               error={userAnswersError}
               render={(answers) => (
@@ -202,10 +213,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <div className="mt-7 flex flex-col gap-4">
             <DataRenderer
               data={tags}
-              empty={{
-                title: "No Tags Found",
-                message: "This user hasn`t used any tags yet.",
-              }}
+              empty={emptyTagState}
               success={userTopTagsSuccess}
               error={userTopTagsError}
               render={(TAGS) => (

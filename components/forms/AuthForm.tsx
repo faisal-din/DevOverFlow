@@ -1,7 +1,5 @@
-// /components/forms/AuthForm.tsx
 "use client";
 
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import Link from "next/link";
 import { DefaultValues, FieldValues, Path, SubmitHandler, useForm } from "react-hook-form";
 import { z, ZodType } from "zod";
@@ -13,6 +11,7 @@ import ROUTES from "@/constants/routes";
 import { ActionResponse } from "@/types/global";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>;
@@ -25,7 +24,7 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
   const router = useRouter();
 
   const form = useForm<z.infer<typeof schema>>({
-    resolver: standardSchemaResolver(schema),
+    resolver: zodResolver(schema),
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
@@ -40,7 +39,8 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
       toast.error("Authentication Failed", {
         description: result?.error?.message,
         style: {
-          background: "red",
+          background: "#ef4444",
+          color: "#fff",
         },
       });
     }
