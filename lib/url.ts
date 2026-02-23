@@ -1,15 +1,5 @@
+import { RemoveUrlQueryParams, UrlQueryParams } from "@/types/global";
 import qs from "query-string";
-
-interface UrlQueryParams {
-  params: string;
-  key: string;
-  value: string | null;
-}
-
-interface RemoveUrlQueryParams {
-  params: string;
-  keysToRemove: string[];
-}
 
 export const formUrlQuery = ({ params, key, value }: UrlQueryParams) => {
   const queryString = qs.parse(params); // Parse existing query parameters {query: "search query"}

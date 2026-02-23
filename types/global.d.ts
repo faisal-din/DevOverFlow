@@ -47,8 +47,19 @@ type ErrorResponse = ActionResponse<undefined> & {
 };
 
 type APIErrorResponse = NextResponse<ErrorResponse>;
-// type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
-type APIResponse<T> = SuccessResponse<T> | ErrorResponse;
+type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
+//type APIResponse<T> = SuccessResponse<T> | ErrorResponse;
+
+interface UrlQueryParams {
+  params: string;
+  key: string;
+  value: string | null;
+}
+
+interface RemoveUrlQueryParams {
+  params: string;
+  keysToRemove: string[];
+}
 
 // difference between params and searchParams
 // params are part of the URL path, --> /question/:id
