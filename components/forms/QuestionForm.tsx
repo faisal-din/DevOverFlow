@@ -209,7 +209,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
         />
         {/* Submit Button */}
         <div className="mt-16 flex justify-end">
-          <Button type="submit" disabled={isPending} className="primary-gradient !text-light-900 w-fit">
+          <Button type="submit" disabled={isPending} className="primary-gradient !text-light-900 w-fit cursor-pointer">
             {isPending ? (
               <>
                 <ReloadIcon className="mr-2 size-4 animate-spin" />

@@ -77,7 +77,7 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
 
         <Button
           disabled={form.formState.isSubmitting}
-          className="primary-gradient paragraph-medium rounded-2 font-inter !text-light-900 min-h-12 w-full px-4 py-3"
+          className="primary-gradient paragraph-medium rounded-2 font-inter !text-light-900 min-h-12 w-full cursor-pointer px-4 py-3"
         >
           {form.formState.isSubmitting ? (buttonText === "Sign In" ? "Signing In..." : "Signing Up...") : buttonText}
         </Button>
@@ -85,14 +85,14 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
         {formType === "SIGN_IN" ? (
           <p>
             Don't have an account?{" "}
-            <Link href={ROUTES.SIGN_UP} className="paragraph-semibold primary-text-gradient">
+            <Link href={ROUTES.SIGN_UP} className="paragraph-semibold primary-text-gradient cursor-pointer">
               Sign up
             </Link>
           </p>
         ) : (
           <p>
             Already have an account?{" "}
-            <Link href={ROUTES.SIGN_IN} className="paragraph-semibold primary-text-gradient">
+            <Link href={ROUTES.SIGN_IN} className="paragraph-semibold primary-text-gradient cursor-pointer">
               Sign in
             </Link>
           </p>

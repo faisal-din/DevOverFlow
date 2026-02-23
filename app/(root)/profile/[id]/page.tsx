@@ -1,4 +1,3 @@
-import React from "react";
 import { auth } from "@/auth";
 import ProfileLink from "@/components/user/ProfileLink";
 import UserAvatar from "@/components/UserAvatar";
@@ -17,7 +16,6 @@ import Link from "next/link";
 import Stats from "@/components/user/Stats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_ANSWERS, EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
@@ -90,7 +88,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
             name={name}
             imageUrl={image}
             className="size-[140px] rounded-full object-cover"
-            fallbackClassName="text-6xl fond-bolder"
+            fallbackClassName="text-6xl font-bolder"
           />
           <div className="mt-3">
             <h2 className="h2-bold text-dark100_light900">{name}</h2>

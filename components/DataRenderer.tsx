@@ -48,7 +48,7 @@ const StateSkeleton = ({ image, title, message, button }: StateSkeletonProps) =>
     <p className="body-regular text-dark500_light700 my-3.5 max-w-md text-center">{message}</p>
     {button && (
       <Link href={button.href}>
-        <Button className="paragraph-medium bg-primary-500 text-light-900 hover:bg-primary-500 mt-5 min-h-[46px] rounded-lg px-4 py-3">
+        <Button className="paragraph-medium bg-primary-500 text-light-900 hover:bg-primary-500 mt-5 min-h-[46px] cursor-pointer rounded-lg px-4 py-3">
           {button.text}
         </Button>
       </Link>
