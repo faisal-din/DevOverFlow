@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     rules: {
       "no-undef": "off",
     },
+    ignorePatterns: [
+      // Ignore files in the "components/ui" directory from linting, as they are auto-generated.
+      "components/ui/**",
+    ],
   },
 
   // Override default ignores of eslint-config-next.
