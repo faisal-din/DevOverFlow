@@ -37,8 +37,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
 
   if (!success)
     return (
-      <div>
-        <div className="h1-bold text-dark100_light900">{error?.message}</div>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <h1 className="h1-bold text-dark100_light900">User not found</h1>
+        <p className="paragraph-regular text-dark200_light800 max-w-md">{error?.message}</p>
       </div>
     );
 
@@ -147,7 +148,10 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <TabsContent value="top-posts" className="mt-5 flex w-full flex-col gap-6">
             <DataRenderer
               data={questions}
-              empty={EMPTY_QUESTION}
+              empty={{
+                title: "No Questions Found",
+                message: "This user hasn`t posted any questions yet.",
+              }}
               success={userQuestionsSuccess}
               error={userQuestionsError}
               render={(questions) => (
@@ -169,7 +173,10 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <TabsContent value="answers" className="mt-5 flex w-full flex-col gap-10">
             <DataRenderer
               data={answers}
-              empty={EMPTY_ANSWERS}
+              empty={{
+                title: "No Answers Found",
+                message: "This user hasn`t answered any questions yet.",
+              }}
               success={userAnswersSuccess}
               error={userAnswersError}
               render={(answers) => (
@@ -197,7 +204,10 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <div className="mt-7 flex flex-col gap-4">
             <DataRenderer
               data={tags}
-              empty={EMPTY_TAGS}
+              empty={{
+                title: "No Tags Found",
+                message: "This user hasn`t used any tags yet.",
+              }}
               success={userTopTagsSuccess}
               error={userTopTagsError}
               render={(TAGS) => (
