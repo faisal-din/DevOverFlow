@@ -220,6 +220,8 @@ export const getQuestionAction = cache(async function getQuestionAction(
 });
 
 export async function getRecommendedQuestionsAction({ userId, query, skip, limit }: RecommendationParams) {
+  await dbConnect();
+
   // Get user's recent interactions
   const interactions = await InteractionModel.find({
     user: new Types.ObjectId(userId),
