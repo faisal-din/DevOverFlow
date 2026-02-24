@@ -29,8 +29,11 @@ const Votes = ({ upvotes, downvotes, hasVotedPromise, targetId, targetType }: Pa
 
   const handleVote = async (voteType: "upvote" | "downvote") => {
     if (!userId)
-      return toast("Please login ", {
+      return toast.error("Please login ", {
         description: "Only logged-in users can vote.",
+        style: {
+          background: "orange",
+        },
       });
 
     setIsLoading(true);

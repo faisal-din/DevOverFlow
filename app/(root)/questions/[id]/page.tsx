@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export async function generateMetadata({ params }: RouteParams): Promise<Metadata> {
   const { id } = await params;
@@ -94,7 +95,14 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
           </div>
 
           <div className="flex items-center justify-end gap-4">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense
+              fallback={
+                <div>
+                  {" "}
+                  <ReloadIcon className="mr-2 size-4 animate-spin" />
+                </div>
+              }
+            >
               <Votes
                 targetType="question"
                 upvotes={question.upvotes}
@@ -104,7 +112,14 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
               />{" "}
             </Suspense>
 
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense
+              fallback={
+                <div>
+                  {" "}
+                  <ReloadIcon className="mr-2 size-4 animate-spin" />
+                </div>
+              }
+            >
               <SaveQuestion questionId={question._id} hasSavedQuestionPromise={hasSavedQuestionPromise} />
             </Suspense>
           </div>

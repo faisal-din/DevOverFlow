@@ -12,6 +12,7 @@ import { ActionResponse } from "@/types/global";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>;
@@ -79,7 +80,19 @@ const AuthForm = <T extends FieldValues>({ schema, defaultValues, formType, onSu
           disabled={form.formState.isSubmitting}
           className="primary-gradient paragraph-medium rounded-2 font-inter !text-light-900 min-h-12 w-full cursor-pointer px-4 py-3"
         >
-          {form.formState.isSubmitting ? (buttonText === "Sign In" ? "Signing In..." : "Signing Up...") : buttonText}
+          {form.formState.isSubmitting ? (
+            buttonText === "Sign In" ? (
+              <>
+                <ReloadIcon className="mr-2 size-4 animate-spin" /> Signing In...
+              </>
+            ) : (
+              <>
+                <ReloadIcon className="mr-2 size-4 animate-spin" /> Signing Up...
+              </>
+            )
+          ) : (
+            buttonText
+          )}
         </Button>
 
         {formType === "SIGN_IN" ? (
