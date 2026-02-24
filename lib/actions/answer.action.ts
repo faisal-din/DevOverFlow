@@ -12,8 +12,11 @@ import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import { after } from "next/server";
 import { createInteraction } from "./interaction.action";
+import dbConnect from "../mongoose";
 
 export const createAnswerAction = async (params: CreateAnswerParams): Promise<ActionResponse<IAnswerDoc>> => {
+  await dbConnect();
+
   const validationResult = await action({
     params,
     schema: AnswerServerSchema,
