@@ -21,7 +21,6 @@ import Pagination from "@/components/Pagination";
 import AnswerCard from "@/components/cards/AnswerCard";
 import TagCard from "@/components/cards/TagCard";
 import { EMPTY_ANSWERS, EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
-import { title } from "process";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   // params --> /12312313

@@ -1,4 +1,4 @@
-import User from "@/database/user.model";
+import { UserModel } from "@/database";
 import handleError from "@/lib/handlers/error";
 import { ValidationError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -11,7 +11,7 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const users = await User.find().select("-password");
+    const users = await UserModel.find();
 
     return NextResponse.json(
       {
@@ -40,15 +40,15 @@ export async function POST(request: Request) {
 
     const { username, email } = validatedData.data;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       throw new Error("User already exists.");
     }
 
-    const existingUsername = await User.findOne({ username });
+    const existingUsername = await UserModel.findOne({ username });
     if (existingUsername) throw new Error("Username is already taken.");
 
-    const newUser = await User.create(validatedData.data);
+    const newUser = await UserModel.create(validatedData.data);
 
     return NextResponse.json(
       {

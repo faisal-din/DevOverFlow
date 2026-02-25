@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import slugify from "slugify";
 
 import dbConnect from "@/lib/mongoose";
-import User from "@/database/user.model";
+import { UserModel } from "@/database";
 import Account from "@/database/account.model";
 import handleError from "@/lib/handlers/error";
 import { ValidationError } from "@/lib/http-errors";
@@ -37,9 +37,9 @@ export async function POST(request: Request) {
       trim: true,
     });
 
-    let existingUser = await User.findOne({ email }).session(session);
+    let existingUser = await UserModel.findOne({ email }).session(session);
     if (!existingUser) {
-      [existingUser] = await User.create([{ name, username: slugifiedUsername, email, image }], { session });
+      [existingUser] = await UserModel.create([{ name, username: slugifiedUsername, email, image }], { session });
     } else {
       const updatedData: { name?: string; image?: string } = {};
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       if (existingUser.image !== image) updatedData.image = image;
 
       if (Object.keys(updatedData).length > 0) {
-        await User.updateOne({ _id: existingUser._id }, { $set: updatedData }).session(session);
+        await UserModel.updateOne({ _id: existingUser._id }, { $set: updatedData }).session(session);
       }
     }
 

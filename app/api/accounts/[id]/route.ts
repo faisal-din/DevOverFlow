@@ -1,4 +1,4 @@
-import Account from "@/database/account.model";
+import AccountModel from "@/database/account.model";
 import handleError from "@/lib/handlers/error";
 import { NotFoundError, ValidationError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   try {
     await dbConnect();
 
-    const account = await Account.findById(id).select("-password");
+    const account = await AccountModel.findById(id);
     if (!account) throw new NotFoundError("Account");
 
     return NextResponse.json(
@@ -37,16 +37,10 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   try {
     await dbConnect();
 
-    const account = await Account.findByIdAndDelete(id);
+    const account = await AccountModel.findByIdAndDelete(id);
     if (!account) throw new NotFoundError("Account");
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: account,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data: account }, { status: 200 });
   } catch (error) {
     return handleError(error, "api") as APIErrorResponse;
   }
@@ -62,13 +56,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const body = await request.json();
     const validatedData = AccountSchema.partial().safeParse(body);
-    if (!validatedData.success) {
-      throw new ValidationError(validatedData.error.flatten().fieldErrors);
-    }
 
-    const updatedAccount = await Account.findByIdAndUpdate(id, validatedData, {
+    if (!validatedData.success) throw new ValidationError(validatedData.error.flatten().fieldErrors);
+
+    const updatedAccount = await AccountModel.findByIdAndUpdate(id, validatedData, {
       new: true,
     });
+
     if (!updatedAccount) throw new NotFoundError("Account");
 
     return NextResponse.json(

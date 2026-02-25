@@ -5,17 +5,23 @@ import HomeFilter from "@/components/filters/HomeFilter";
 import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
-import { HomePageFilters } from "@/constants/filters";
 
+import { HomePageFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
 
 import { getAllQuestionsAction } from "@/lib/actions/question.action";
+import { Metadata } from "next";
 import Link from "next/link";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
+
+export const metadata: Metadata = {
+  title: "Dev Overflow | Home",
+  description: "Discover different programming questions and answers with recommendations from the community.",
+};
 
 const Home = async ({ searchParams }: SearchParams) => {
   const { page, pageSize, query, filter } = await searchParams;
@@ -23,8 +29,8 @@ const Home = async ({ searchParams }: SearchParams) => {
   const { success, data, error } = await getAllQuestionsAction({
     page: Number(page) || 1,
     pageSize: Number(pageSize) || 10,
-    query: query || "",
-    filter: filter || "",
+    query,
+    filter,
   });
 
   const { questions, isNext } = data || {};
@@ -38,6 +44,7 @@ const Home = async ({ searchParams }: SearchParams) => {
           <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
+
       <section className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch route="/" imgSrc="/icons/search.svg" placeholder="Search questions..." otherClasses="flex-1" />
 

@@ -13,10 +13,6 @@ const Page = async () => {
   const { success, data } = await getUserByIdAction({ userId: session.user.id });
   if (!success) redirect(ROUTES.SIGN_IN);
 
-  console.log({
-    userdata: data,
-  });
-
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">Edit Profile</h1>

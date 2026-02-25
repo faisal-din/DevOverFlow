@@ -9,6 +9,7 @@ import Votes from "../votes/Votes";
 import { Suspense } from "react";
 import { hasVotedAction } from "@/lib/actions/vote.action";
 import EditDeleteAction from "../user/EditDeleteAction";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface Props extends Answer {
   containerClasses?: string;
@@ -62,7 +63,13 @@ const AnswerCard = ({
           </Link>
         </div>
         <div className="flex justify-end">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense
+            fallback={
+              <div>
+                <ReloadIcon className="mr-2 size-4 animate-spin" />
+              </div>
+            }
+          >
             <Votes
               targetType="answer"
               targetId={_id}

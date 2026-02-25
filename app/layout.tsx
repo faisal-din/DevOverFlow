@@ -6,6 +6,7 @@ import ThemeProvider from "@/context/Theme";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { ReactNode } from "react";
 
 const inter = localFont({
   src: "./fonts/Inter-VF.ttf",
@@ -28,11 +29,7 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = async ({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) => {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
 
   return (

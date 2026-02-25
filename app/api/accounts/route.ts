@@ -1,4 +1,5 @@
-import Account from "@/database/account.model";
+import AccountModel from "@/database/account.model";
+
 import handleError from "@/lib/handlers/error";
 import { ForbiddenError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -6,12 +7,12 @@ import { AccountSchema } from "@/lib/validations";
 import { APIErrorResponse } from "@/types/global";
 import { NextResponse } from "next/server";
 
-// GET /api/users - Retrieve a list of all accounts
+// GET /api/accounts - Retrieve a list of all accounts
 export async function GET() {
   try {
     await dbConnect();
 
-    const accounts = await Account.find().select("-password");
+    const accounts = await AccountModel.find();
 
     return NextResponse.json(
       {
@@ -25,7 +26,7 @@ export async function GET() {
   }
 }
 
-// POST /api/users - Create a new user
+// POST /api/accounts - Create a new account
 export async function POST(request: Request) {
   try {
     await dbConnect();
@@ -34,15 +35,14 @@ export async function POST(request: Request) {
 
     const validatedData = AccountSchema.parse(body);
 
-    const existingAccount = await Account.findOne({
+    const existingAccount = await AccountModel.findOne({
       provider: validatedData.provider,
       providerAccountId: validatedData.providerAccountId,
     });
-    if (existingAccount) {
-      throw new ForbiddenError("An account with the same provider already exists.");
-    }
 
-    const newAccount = await Account.create(validatedData);
+    if (existingAccount) throw new ForbiddenError("An account with the same provider already exists");
+
+    const newAccount = await AccountModel.create(validatedData);
 
     return NextResponse.json(
       {

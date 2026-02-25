@@ -5,9 +5,9 @@ interface SignInWithOAuthParams {
   providerAccountId: string;
   user: {
     name: string;
+    username: string;
     email: string;
     image: string;
-    username: string;
   };
 }
 
@@ -18,13 +18,13 @@ interface AuthCredentials {
   password: string;
 }
 
-interface createQuestionParams {
+interface CreateQuestionParams {
   title: string;
   content: string;
   tags: string[];
 }
 
-interface EditQuestionParams extends createQuestionParams {
+interface EditQuestionParams extends CreateQuestionParams {
   questionId: string;
 }
 
@@ -74,7 +74,7 @@ interface GetUserParams {
   userId: string;
 }
 
-interface GetUserQuestionsParams extends Omit<PaginatedSearchParams, "query" | "filter" | "sort"> {
+interface GetUserQuestionsParams extends Omit<PaginatedSearchParams, "query | filter | sort"> {
   userId: string;
 }
 

@@ -1,4 +1,4 @@
-import User from "@/database/user.model";
+import { UserModel } from "@/database";
 import handleError from "@/lib/handlers/error";
 import { NotFoundError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   try {
     await dbConnect();
 
-    const user = await User.findById(id).select("-password");
+    const user = await UserModel.findById(id);
     if (!user) throw new NotFoundError("User");
 
     return NextResponse.json(
@@ -37,7 +37,7 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   try {
     await dbConnect();
 
-    const user = await User.findByIdAndDelete(id);
+    const user = await UserModel.findByIdAndDelete(id);
     if (!user) throw new NotFoundError("User");
 
     return NextResponse.json(
@@ -63,9 +63,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const body = await request.json();
     const validatedData = UserSchema.partial().parse(body);
 
-    const updatedUser = await User.findByIdAndUpdate(id, validatedData, { new: true, runValidators: true }).select(
-      "-password"
-    );
+    const updatedUser = await UserModel.findByIdAndUpdate(id, validatedData, {
+      new: true,
+    });
     if (!updatedUser) throw new NotFoundError("User");
 
     return NextResponse.json(

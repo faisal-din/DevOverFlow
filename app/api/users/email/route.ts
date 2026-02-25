@@ -1,4 +1,4 @@
-import User from "@/database/user.model";
+import { UserModel } from "@/database";
 import handleError from "@/lib/handlers/error";
 import { NotFoundError, ValidationError } from "@/lib/http-errors";
 import dbConnect from "@/lib/mongoose";
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
     }
 
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) throw new NotFoundError("User");
 
     return NextResponse.json(
